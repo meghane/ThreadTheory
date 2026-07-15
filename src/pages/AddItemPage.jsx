@@ -9,9 +9,9 @@ import { useNavigate }       from 'react-router-dom'
 import { useAuth }           from '../context/AuthContext'
 import { addWardrobeItem, uploadClothingImage } from '../services/supabase'
 
-const CATEGORIES = ['Tops', 'Bottoms', 'Outerwear', 'Shoes', 'Accessories', 'Dresses', 'Other']
+const CATEGORIES = ['Tops', 'Bottoms', 'Outerwear', 'Shoes','Dresses', 'Other']
 const COLORS     = ['Black', 'White', 'Gray', 'Beige', 'Brown', 'Navy', 'Blue', 'Green', 'Red', 'Pink', 'Purple', 'Yellow', 'Orange', 'Multicolor']
-const STYLES     = ['Casual', 'Formal', 'Business', 'Athletic', 'Lounge', 'Party', 'Beach', 'Outdoor']
+const STYLES     = ['Casual', 'Formal', 'Business', 'Athletic', 'Party', 'Beach']
 const SEASONS    = ['All seasons', 'Spring', 'Summer', 'Fall', 'Winter']
 
 const EMPTY_FORM = { name: '', category: '', color: '', style: '', season: 'All seasons', brand: '', description: '' }

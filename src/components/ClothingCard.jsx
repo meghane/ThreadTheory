@@ -7,10 +7,10 @@ import { useNavigate } from 'react-router-dom'
 
 // Colour of the category pill on each card
 const CATEGORY_TAG = {
-  Tops:        'tag-sage',
-  Bottoms:     'tag-terracotta',
-  Outerwear:   'tag-lavender',
-  Dresses:     'tag-terracotta',
+  Tops:        'tag-neutral',
+  Bottoms:     'tag-neutral',
+  Outerwear:   'tag-neutral',
+  Dresses:     'tag-neutral',
   Shoes:       'tag-neutral',
   Accessories: 'tag-neutral',
   Other:       'tag-neutral',

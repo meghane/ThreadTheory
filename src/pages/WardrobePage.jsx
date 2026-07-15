@@ -9,9 +9,9 @@ import { useAuth }             from '../context/AuthContext'
 import { getWardrobeItems, deleteWardrobeItem } from '../services/supabase'
 import ClothingCard            from '../components/ClothingCard'
 
-const CATEGORIES = ['All', 'Tops', 'Bottoms', 'Outerwear', 'Shoes', 'Accessories', 'Dresses', 'Other']
+const CATEGORIES = ['All', 'Tops', 'Bottoms', 'Outerwear', 'Shoes', 'Dresses', 'Other']
 const COLORS     = ['All', 'Black', 'White', 'Gray', 'Beige', 'Brown', 'Navy', 'Blue', 'Green', 'Red', 'Pink', 'Purple', 'Yellow', 'Orange', 'Multicolor']
-const STYLES     = ['All', 'Casual', 'Formal', 'Business', 'Athletic', 'Lounge', 'Party', 'Beach', 'Outdoor']
+const STYLES     = ['All', 'Casual', 'Formal', 'Business', 'Athletic','Party', 'Beach']
 
 export default function WardrobePage() {
   const { user } = useAuth()
