@@ -45,7 +45,20 @@ export default function OutfitCard({ outfit, onSave, saved, saving }) {
       {/* Content Area */}
       <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         
+<<<<<<< HEAD
       
+=======
+        {/* Gemini-Generated Custom Title */}
+        <h3 style={{ 
+          fontSize: 16, 
+          fontWeight: 600, 
+          color: 'var(--ink)', 
+          margin: '0 0 8px 0',
+          lineHeight: 1.2 
+        }}>
+          {title || "Classic Combination"}
+        </h3>
+>>>>>>> 1d4f78dda7022e422c573e745031f990009b5aad
 
         {/* Item List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>

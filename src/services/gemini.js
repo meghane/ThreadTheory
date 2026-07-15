@@ -7,7 +7,11 @@ const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 /**
  * Generates structured outfit combinations using Gemini 2.5 Flash.
  */
+<<<<<<< HEAD
 export async function generateAIOutfit(items, filters = {}, maxResults = 15) {
+=======
+export async function generateAIOutfit(items, filters = {}, maxResults = 12) {
+>>>>>>> 1d4f78dda7022e422c573e745031f990009b5aad
   // Map items to a lighter version to save prompt tokens
   const cleanWardrobe = items.map(item => ({
     id: item.id,
@@ -17,8 +21,12 @@ export async function generateAIOutfit(items, filters = {}, maxResults = 15) {
     style: item.style || 'Casual',
     season: item.season || 'All seasons'
   }));
+<<<<<<< HEAD
 
   const prompt = `
+=======
+const prompt = `
+>>>>>>> 1d4f78dda7022e422c573e745031f990009b5aad
     You are an expert fashion stylist. Look at this wardrobe and create up to ${maxResults} unique outfit combinations.
     
     CRITICAL FILTERING CONDITION:
@@ -40,11 +48,23 @@ export async function generateAIOutfit(items, filters = {}, maxResults = 15) {
         { text: prompt }
       ],
       config: {
+<<<<<<< HEAD
         responseMimeType: 'application/json',
         temperature: 0.3,
         maxOutputTokens: 12000, // 👈 Increased from 1000 to 4000 so the JSON won't cut off
         candidateCount: 1,
         responseSchema: {
+=======
+        // Enforce strict JSON output with titles and descriptions
+        responseMimeType: 'application/json',
+        temperature: 0.3,
+        maxOutputTokens: 1000,
+        candidateCount: 1,
+        responseSchema: {
+
+          maxOutputTokens: 1000,
+          
+>>>>>>> 1d4f78dda7022e422c573e745031f990009b5aad
           type: Type.ARRAY,
           description: "List of styled outfit combinations",
           items: {
