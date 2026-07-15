@@ -126,12 +126,7 @@ export function generateOutfits(items, filters = {}, maxResults = 12) {
     outfit.id          = key;
     outfit.season      = season;
     outfit.weatherNote = tempF != null ? `For ${Math.round(tempF)}°F weather (${season})` : null;
-<<<<<<< HEAD
-    
-=======
-    outfit.title       = "Classic Combination";
-    outfit.description = "A reliable style combo selected directly from your seasonal wardrobe parameters.";
->>>>>>> 1d4f78dda7022e422c573e745031f990009b5aad
+
 
     outfits.push(outfit);
   }
@@ -142,11 +137,9 @@ export function generateOutfits(items, filters = {}, maxResults = 12) {
 /**
  * Intelligent Wrapper
  */
-<<<<<<< HEAD
+
 export async function getSmartOutfits(items, filters = {}, maxResults = 15) {
-=======
-export async function getSmartOutfits(items, filters = {}, maxResults = 12) {
->>>>>>> 1d4f78dda7022e422c573e745031f990009b5aad
+
   if (!items || items.length === 0) {
     return [];
   }

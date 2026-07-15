@@ -6,11 +6,7 @@ import { getSmartOutfits }     from '../services/outfitEngine'
 import useWeather, { weatherToOutfitHint } from '../hooks/useWeather'
 import OutfitCard              from '../components/OutfitCard'
 
-<<<<<<< HEAD
 const STYLES = ['Any', 'Casual', 'Formal', 'Business', 'Athletic',  'Party', 'Beach',]
-=======
-const STYLES = ['Any', 'Casual', 'Formal', 'Business', 'Athletic', 'Lounge', 'Party', 'Beach', 'Outdoor']
->>>>>>> 1d4f78dda7022e422c573e745031f990009b5aad
 
 const WEATHER_ICONS = {
   0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
@@ -206,11 +202,7 @@ export default function OutfitsPage() {
             <div key={outfit.id} style={{ position: 'relative' }}>
               {outfit.isFallback && (
                 <span className="tag" style={{ position: 'absolute', top: 12, left: 12, zIndex: 10, background: '#f0eae4', color: '#555', fontSize: 11, padding: '2px 8px', borderRadius: 4 }}>
-<<<<<<< HEAD
                  
-=======
-                  ⚙️ Standby Look
->>>>>>> 1d4f78dda7022e422c573e745031f990009b5aad
                 </span>
               )}
               <OutfitCard
