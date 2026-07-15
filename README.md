@@ -2,7 +2,7 @@
 
 Wardrobe management and outfit recommendation web app.
 
-**Stack:** React 18 + Vite · React Router v6 · Supabase (auth, database, image storage) · Open-Meteo (free weather API)
+**Technology Stack:** React 18 + Vite · React Router v6 · Supabase (auth, database, image storage) · Open-Meteo (free weather API)
 
 ---
 
@@ -64,6 +64,7 @@ src/
 │   └── WardrobePage.jsx       // Clothing grid + filters
 │
 ├── services/
+│   ├── gemini.js              // Google AI Implementation
 │   ├── outfitEngine.js        // Outfit generation logic (rule-based)
 │   └── supabase.js            // Supabase client + database functions
 │
@@ -82,12 +83,15 @@ vite.config.js
 
 ---
 
-## Teresa — backend notes
-- All Supabase queries are in `src/lib/supabase.js`. Add new functions there.
-- To connect the AI recommendation system: replace the `generateOutfits()` call in `OutfitsPage.jsx` with a `fetch()` to your endpoint. The page already handles loading/empty states.
-- Database schema is in `supabase_schema.sql`.
+## Dataset
 
-## Meghan — UI notes
-- Colors, fonts, and spacing tokens are CSS variables at the top of `src/index.css`.
-- Shared button, card, and tag styles are defined there too.
-- Each page uses inline styles for layout and CSS classes from `index.css` for theming.
+ThreadTheory uses the **Fashion Product Images Dataset** from Kaggle as its primary dataset. This dataset is supplemented with clothing images uploaded by the developers to test wardrobe management, outfit generation, and AI recommendations.
+
+---
+
+## Deployment
+
+The application is deployed using Netlify and can be accessed at:
+
+**https://threadtheoryapp.netlify.app**
+
