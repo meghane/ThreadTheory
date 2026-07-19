@@ -105,7 +105,7 @@ export default function OutfitsPage() {
     <div className="page-container" style={{ paddingTop: 'calc(var(--nav-h) + 32px)', paddingBottom: 60 }}>
 
       <div style={{ marginBottom: 32 }}>
-        <h1 className="section-title" style={{ marginBottom: 8 }}>Outfit suggestions</h1>
+        <h1 className="section-title" style={{ marginBottom: 8 }}>Outfit Suggestions</h1>
         <p style={{ color: 'var(--ink-muted)', fontSize: 15 }}>Matched from your wardrobe based on colour, season, and style.</p>
       </div>
 

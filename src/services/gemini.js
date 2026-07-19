@@ -1,18 +1,22 @@
 // src/services/gemini.js
 import { GoogleGenAI, Type } from '@google/genai';
 
-// Initialize the client using the modern SDK standard
+// Initialize the client instance once globally
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 /**
- * Generates structured outfit combinations using Gemini 2.5 Flash.
+ * Generates structured outfit combinations using Gemini 2.5 Flash-Lite.
+ * Explicitly tells the AI to create custom, descriptive content.
  */
+// src/services/gemini.js
 
-export async function generateAIOutfit(items, filters = {}, maxResults = 15) {
+export async function generateAIOutfit(items, filters = {}, maxResults = 12) {
+  // 1. Cap the max results to 5 or 6 for the AI tier. 
+  // This keeps the JSON footprint small enough that it NEVER hits the cutoff wall!
+  const targetCount = Math.min(maxResults, 6);
 
-  // Map items to a lighter version to save prompt tokens
   const cleanWardrobe = items.map(item => ({
-    id: item.id,
+    id: String(item.id), 
     name: item.name,
     category: item.category,
     color: item.color,
@@ -20,46 +24,46 @@ export async function generateAIOutfit(items, filters = {}, maxResults = 15) {
     season: item.season || 'All seasons'
   }));
 
-const prompt = `
-
-    You are an expert fashion stylist. Look at this wardrobe and create up to ${maxResults} unique outfit combinations.
+  const prompt = `
+    You are an expert fashion stylist. Look at this wardrobe data and create a diverse list of exactly ${targetCount} unique outfit combinations.
     
-    CRITICAL FILTERING CONDITION:
-    - Target Style: ${filters.style || 'Any'}
-    - Target Temperature/Weather context: ${filters.tempF ? `${filters.tempF}°F` : 'Any'}
+    SHUFFLE SEED: ${Math.random()} 
 
-    STRICT STYLE RULES:
-    1. If the Target Style is NOT 'Any', then EVERY single item included in an outfit MUST match that style category. 
-    2. Do NOT mix a 'Formal' item into a 'Casual' outfit, or an 'Athletic' item into a 'Business' outfit.
-    3. If an item in the wardrobe does not have a style tag or is empty, you may use it as a neutral basic filler item if needed.
-    4. For EACH outfit, generate a unique, creative 'title' and 'description' highlighting its ${filters.style || 'style'} suitability.
+    CRITICAL FILTERS:
+    - Target Style Filter: ${filters.style || 'Any'}
+    - Weather context: ${filters.tempF ? `${filters.tempF}°F` : 'Any'}
+
+    CORE GUIDELINES:
+    1. The outfit MUST include at least one anchor item that explicitly fits the requested profile: "${filters.style || 'Any'}".
+    2. Fill out the rest of the outfit combination using matching layers or standard neutral/casual basics.
+    3. Obey strict logical boundaries: No formal blazers/suits with sweatpants, no high heels/heavy boots for beachwear or athletic filters.
+    4. WRITE A UNIQUE DESCRIPTION: For every single outfit array element, write a charming, custom 1-2 sentence styling description explaining why these specific pieces match well together and hit the "${filters.style || 'Any'}" vibe. Never return generic placeholders.
   `;
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.5-flash', 
       contents: [
         { text: `Wardrobe Data: ${JSON.stringify(cleanWardrobe)}` },
         { text: prompt }
       ],
       config: {
         responseMimeType: 'application/json',
-        temperature: 0.3,
-        maxOutputTokens: 12000, // 👈 Increased from 1000 to 4000 so the JSON won't cut off
-        candidateCount: 1,
+        temperature: 0.3, 
+        // 2. Max out the token response capacity to give the structural engine tons of breathing room
+        maxOutputTokens: 8192, 
         responseSchema: {
           type: Type.ARRAY,
-          description: "List of styled outfit combinations",
+          description: "List of styled outfit combinations matching the criteria",
           items: {
             type: Type.OBJECT,
             properties: {
-              id: { type: Type.STRING, description: "A unique string combining item IDs like 'id1-id2-id3'" },
-              title: { type: Type.STRING, description: "A stylish, catchy title for the outfit (e.g., 'Urban Casual Neutrals')" },
-              description: { type: Type.STRING, description: "A detailed description explaining why this outfit matches the filter, color palette, or vibe." },
-              weatherNote: { type: Type.STRING, description: "Optional sentence about the weather suitability, or null." },
+              id: { type: Type.STRING, description: "Unique string combining the selected item IDs" },
+              title: { type: Type.STRING },
+              description: { type: Type.STRING },
+              weatherNote: { type: Type.STRING, nullable: true },
               items: {
                 type: Type.ARRAY,
-                description: "The list of item objects that make up this outfit",
                 items: {
                   type: Type.OBJECT,
                   properties: {

@@ -48,7 +48,6 @@ function pick(arr) {
   return arr.length ? arr[Math.floor(Math.random() * arr.length)] : null;
 }
 
-// Helper to find the style property on an item regardless of DB naming schema
 function getItemStyle(item) {
   if (!item) return '';
   const styleValue = item.style || item.style_type || item.styleCategory || item.tags || '';
@@ -56,6 +55,76 @@ function getItemStyle(item) {
     return styleValue.map(s => String(s).toLowerCase());
   }
   return String(styleValue).toLowerCase();
+}
+
+/**
+ * Generates fun fallback copy locally without consuming API tokens
+ */
+function createOfflineDescription(items, targetStyle) {
+  const styleStr = targetStyle && targetStyle !== 'Any' ? targetStyle : 'Everyday';
+  const mainPiece = items.find(i => i.category === 'Tops' || i.category === 'Dresses');
+  const shoePiece = items.find(i => i.category === 'Shoes');
+  
+  const combinations = [
+    `A clean, coordinated ${styleStr.toLowerCase()} layout highlighting your ${mainPiece ? mainPiece.name.toLowerCase() : 'essential items'} and matching shoes.`,
+    `Perfect setup for an easygoing day out, anchoring a streamlined ${styleStr.toLowerCase()} style architecture.`,
+    `A balanced pairing combining functional comfort with a smart aesthetic palette.`
+  ];
+  
+  return combinations[Math.floor(Math.random() * combinations.length)];
+}
+
+function createOfflineTitle(items, targetStyle) {
+  const styleStr = targetStyle && targetStyle !== 'Any' ? targetStyle : 'Everyday';
+  const modifiers = ['Minimalist', 'Classic', 'Street', 'Curated', 'Essential', 'Urban'];
+  const chosenMod = modifiers[Math.floor(Math.random() * modifiers.length)];
+  return `${chosenMod} ${styleStr} Selection`;
+}
+
+/**
+ * 🛡️ COMPREHENSIVE CONTEXT GATEKEEPER
+ */
+function isOutfitLogicallyValid(outfitItems, targetStyle) {
+  if (!targetStyle || typeof targetStyle !== 'string') return true;
+  const styleLower = targetStyle.toLowerCase();
+
+  const names = outfitItems.map(i => (i.name || '').toLowerCase());
+
+  if (styleLower === 'athletic') {
+    const hasInvalidShoe = names.some(n => 
+      n.includes('sandal') || n.includes('flop') || n.includes('heel') || 
+      n.includes('pump') || n.includes('wedge') || n.includes('boot') || 
+      n.includes('oxford') || n.includes('loafer') || n.includes('slide')
+    );
+    const hasInvalidClothing = names.some(n => 
+      n.includes('blazer') || n.includes('suit') || n.includes('button down') || 
+      n.includes('tuxedo') || n.includes('pencil skirt') || n.includes('dress pants')
+    );
+    if (hasInvalidShoe || hasInvalidClothing) return false;
+  }
+  
+  if (styleLower === 'beach') {
+    const hasInvalidShoe = names.some(n => 
+      n.includes('heel') || n.includes('pump') || n.includes('wedge') || 
+      n.includes('combat') || n.includes('winter boot') || n.includes('oxford')
+    );
+    const hasInvalidClothing = names.some(n => 
+      n.includes('heavy coat') || n.includes('parka') || n.includes('blazer') || 
+      n.includes('trench') || n.includes('thermal') || n.includes('suit')
+    );
+    if (hasInvalidShoe || hasInvalidClothing) return false;
+  }
+
+  if (styleLower === 'business' || styleLower === 'formal') {
+    const hasInvalidItems = names.some(n => 
+      n.includes('sweatpant') || n.includes('jogger') || n.includes('flip flop') || 
+      n.includes('crocs') || n.includes('jersey') || n.includes('tracksuit') ||
+      n.includes('running shorts')
+    );
+    if (hasInvalidItems) return false;
+  }
+
+  return true;
 }
 
 /**
@@ -75,7 +144,7 @@ export function generateOutfits(items, filters = {}, maxResults = 12) {
 
   const outfits = [];
   const seen    = new Set();
-  const tries   = maxResults * 10;
+  const tries   = maxResults * 20;
 
   for (let i = 0; i < tries && outfits.length < maxResults; i++) {
     const outfit = { items: [] };
@@ -100,23 +169,22 @@ export function generateOutfits(items, filters = {}, maxResults = 12) {
     const shoe = pick(shoes);
     if (shoe) outfit.items.push(shoe);
 
+    const acc = pick(accessories);
     if (accessories.length > 0 && Math.random() > 0.6) {
-      const acc = pick(accessories);
       if (acc) outfit.items.push(acc);
     }
 
-    // FIXED: Safely check if style exists and is a valid string before transforming
+    if (!isOutfitLogicallyValid(outfit.items, style)) continue;
+
     if (typeof style === 'string' && style.trim() !== '' && style.toLowerCase() !== 'any') {
       const targetStyle = style.toLowerCase();
-      const hasMismatch = outfit.items.some(item => {
+      
+      const hasAnyStyleMatch = outfit.items.some(item => {
         const itemStyle = getItemStyle(item);
-        if (!itemStyle) return false; // Allow unstyled items as neutral basics
-        if (Array.isArray(itemStyle)) {
-          return !itemStyle.includes(targetStyle);
-        }
-        return itemStyle !== targetStyle;
+        return Array.isArray(itemStyle) ? itemStyle.includes(targetStyle) : itemStyle === targetStyle;
       });
-      if (hasMismatch) continue;
+
+      if (!hasAnyStyleMatch) continue;
     }
 
     const key = outfit.items.map(it => it.id).sort().join('-');
@@ -124,9 +192,10 @@ export function generateOutfits(items, filters = {}, maxResults = 12) {
     seen.add(key);
 
     outfit.id          = key;
+    outfit.title       = createOfflineTitle(outfit.items, style);
+    outfit.description = createOfflineDescription(outfit.items, style);
     outfit.season      = season;
     outfit.weatherNote = tempF != null ? `For ${Math.round(tempF)}°F weather (${season})` : null;
-
 
     outfits.push(outfit);
   }
@@ -135,68 +204,42 @@ export function generateOutfits(items, filters = {}, maxResults = 12) {
 }
 
 /**
- * Intelligent Wrapper
+ * Intelligent Wrapper Layer
  */
-
 export async function getSmartOutfits(items, filters = {}, maxResults = 15) {
-
-  if (!items || items.length === 0) {
-    return [];
-  }
-
-  // Diagnostic Logs
-  console.log("=== DIAGNOSTIC: CURRENT WARDROBE DATABASE ITEMS ===");
-  console.table(items.slice(0, 5).map(i => ({
-    id: i.id,
-    name: i.name,
-    category: i.category,
-    style_property: i.style || "NOTHING FOUND",
-    all_keys: Object.keys(i).join(", ")
-  })));
-  console.log("Active Filtering Criteria:", filters);
+  if (!items || items.length === 0) return [];
 
   try {
-    const rawResult = await generateAIOutfit(items, filters, maxResults);
-    let apiOutfits = [];
+    console.log("--- 🧠 ENGINE DIAGNOSTIC START ---");
     
-    if (Array.isArray(rawResult)) {
-      apiOutfits = rawResult;
-    } else if (rawResult && typeof rawResult === 'object') {
-      const extractedArray = Object.values(rawResult).find(val => Array.isArray(val));
-      if (extractedArray) {
-        apiOutfits = extractedArray;
+    const rawResult = await generateAIOutfit(items, filters, maxResults);
+    let apiOutfits = Array.isArray(rawResult) ? rawResult : [];
+    
+    if (apiOutfits.length === 0) {
+      throw new Error("Zero outfit records returned by Gemini API.");
+    }
+
+    const completeOutfits = apiOutfits.map((outfit, idx) => {
+      const detailedItems = outfit.items.map(aiItem => {
+        return items.find(original => String(original.id) === String(aiItem.id));
+      }).filter(Boolean);
+
+      if (detailedItems.length === 0 || detailedItems.length !== outfit.items.length) {
+        return null;
       }
-    }
 
-    if (!apiOutfits || apiOutfits.length === 0) {
-      throw new Error("No structured outfit arrays returned.");
-    }
+      if (!isOutfitLogicallyValid(detailedItems, filters.style)) {
+        return null;
+      }
 
-    const completeOutfits = apiOutfits.map(outfit => {
-      const detailedItems = outfit.items
-        .map(aiItem => items.find(original => original.id === aiItem.id))
-        .filter(Boolean);
-
-      if (detailedItems.length === 0) return null;
-
-      // FIXED: Safely verify type before applying filter safety check
       if (typeof filters.style === 'string' && filters.style.trim() !== '' && filters.style.toLowerCase() !== 'any') {
         const targetStyle = filters.style.toLowerCase();
-        
-        const hasMismatchedStyle = detailedItems.some(item => {
+        const hasAnchorStyle = detailedItems.some(item => {
           const itemStyle = getItemStyle(item);
-          if (!itemStyle) return false; 
-          
-          if (Array.isArray(itemStyle)) {
-            return !itemStyle.includes(targetStyle);
-          }
-          return itemStyle !== targetStyle;
+          return Array.isArray(itemStyle) ? itemStyle.includes(targetStyle) : itemStyle === targetStyle;
         });
 
-        if (hasMismatchedStyle) {
-          console.log(`Pruned AI outfit because it contained items mismatching the "${filters.style}" filter.`);
-          return null; 
-        }
+        if (!hasAnchorStyle) return null;
       }
 
       return {
@@ -206,16 +249,15 @@ export async function getSmartOutfits(items, filters = {}, maxResults = 15) {
     }).filter(Boolean);
 
     if (completeOutfits.length === 0) {
-      throw new Error("All generated Gemini options failed style safety checks.");
+      throw new Error("All generated outfits were vetoed by programmatic filters.");
     }
 
     return completeOutfits;
 
   } catch (error) {
-    console.warn("Fell back to rule engine:", error.message);
+    console.warn("API layer route bypass (Quota hit or connection error). Using custom offline copywriting script instead.");
     
-    const fallbackOutfits = generateOutfits(items, filters, maxResults);
-    return fallbackOutfits.map(outfit => ({
+    return generateOutfits(items, filters, maxResults).map(outfit => ({
       ...outfit,
       isFallback: true
     }));
