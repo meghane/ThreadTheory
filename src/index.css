@@ -2,8 +2,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* ─── Design tokens ──────────────────────────────────────────
-   Change colors here and they update everywhere on the site.
-   Meghan: this is the main place for branding changes.        */
+   Change colors here and they update everywhere on the site.     */
 :root {
   --cream:            #F9F6F0;
   --cream-dark:       #EDE9E1;

@@ -1,7 +1,6 @@
 // src/components/Navbar.jsx
 // The sticky top navigation bar. Shows the logo + nav links when logged in,
 // just the logo and a sign-in button when logged out.
-// Meghan: colours and font are pulled from CSS variables in index.css.
 
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'

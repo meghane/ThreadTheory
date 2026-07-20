@@ -1,6 +1,5 @@
 // src/pages/LandingPage.jsx
 // Public home page — shown to visitors who aren't logged in yet.
-// Meghan: hero copy, features list, and CTA text can all be edited below.
 
 import { Link } from 'react-router-dom'
 

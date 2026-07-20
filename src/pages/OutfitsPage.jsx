@@ -106,7 +106,7 @@ export default function OutfitsPage() {
 
       <div style={{ marginBottom: 32 }}>
         <h1 className="section-title" style={{ marginBottom: 8 }}>Outfit Suggestions</h1>
-        <p style={{ color: 'var(--ink-muted)', fontSize: 15 }}>Matched from your wardrobe based on colour, season, and style.</p>
+        <p style={{ color: 'var(--ink-muted)', fontSize: 15 }}>Matched from your wardrobe based on color, season, and style.</p>
       </div>
 
       {/* Weather strip */}
@@ -183,7 +183,7 @@ export default function OutfitsPage() {
       {loading && outfits.length === 0 ? (
         <div className="centered" style={{ padding: '40px 0' }}>
           <div className="spinner" />
-          {generatingAI && <p style={{ color: 'var(--ink-muted)', fontSize: 14, marginTop: 12 }}>Gemini is curating style options...</p>}
+          {generatingAI && <p style={{ color: 'var(--ink-muted)', fontSize: 14, marginTop: 12 }}> Gemini is curating style options...</p>}
         </div>
       ) : items.length < 3 ? (
         <div className="empty-state">

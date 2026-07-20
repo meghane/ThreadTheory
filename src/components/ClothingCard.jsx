@@ -5,7 +5,7 @@
 
 import { useNavigate } from 'react-router-dom'
 
-// Colour of the category pill on each card
+// Color of the category pill on each card
 const CATEGORY_TAG = {
   Tops:        'tag-neutral',
   Bottoms:     'tag-neutral',
@@ -19,7 +19,7 @@ const CATEGORY_TAG = {
 // Fallback emoji when no photo has been uploaded
 const CATEGORY_EMOJI = {
   Tops: '👕', Bottoms: '👖', Outerwear: '🧥',
-  Dresses: '👗', Shoes: '👟', Accessories: '👜', Other: '✨',
+  Dresses: '👗', Shoes: '👟', Other: '✨',
 }
 
 export default function ClothingCard({ item, onDelete }) {
